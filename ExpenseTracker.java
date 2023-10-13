@@ -1,7 +1,9 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.io.IOException;
 
 // Major issue, how can i save a list of categories in the budget object that
 // can be used in the expensetracker object
@@ -66,11 +68,12 @@ public class ExpenseTracker {
     */
      public static void mainMenu(){
          int selection = 0;
-         while(selection != 5) {
+         while(selection != 6) {
              System.out.println("Main Menu: \n 1) Setup New Budget \n 2) Restore Budget \n " +
                      "3) Expense Adding Mode \n 4) Restore previous expense tracker \n " +
-                      "5) QUIT");
+                      "5) Save Expenses to text file \n 6) QUIT");
              selection = userInput.nextInt();
+             userInput.nextLine();
 
              switch (selection) {
                  case 1:
@@ -84,9 +87,15 @@ public class ExpenseTracker {
                      expenseAdder();
                      break;
                  case 4:
-                     System.out.println("Resotring previously used expense tracker...");
+                     System.out.println("Restoring previously used expense tracker...");
                      break;
                  case 5:
+                     System.out.println("Name of file to save: ");
+                     String fileName = userInput.nextLine();
+                     userInput.nextLine();
+                     System.out.println("Saving current expense list to file...");
+                     saveArrayListToFile(expenses);
+                 case 6:
                      break;
              }
              //in the while loop still
@@ -120,13 +129,14 @@ public class ExpenseTracker {
              System.out.println("Expense Adder Menu: \n 1) Add Expense \n 2) View total expenses\n " +
                      "3) Clear totals\n 4) Quit \n ");
              selection = userInput.nextInt();
+             userInput.nextLine();
 
              switch (selection) {
                  case 1:
                      System.out.println("Enter the date in the format yyyy-MM-dd ");
                      String date = userInput.nextLine();
-                     //System.out.println("Enter the category from the list: \n" + Arrays.toString(Budget.categories));
-                     System.out.println("Enter the category from the list: ");
+                     System.out.println("Enter the category from the list: \n" + Budget.categories);
+                     //System.out.println("Enter the category from the list: ");
                      String category = userInput.nextLine();
                      System.out.println("Enter the amount to add to the total: ");
                      double amount = userInput.nextDouble();
@@ -152,23 +162,47 @@ public class ExpenseTracker {
      }// end of expenseAdder
 
      public static void budgetSetup(){
-//  is this where load existing budget will happen? yes
-// do you want to set up a new budget or restore a saved budget from file
-         // change to say create new or load existing.
-         System.out.println("New budget? 0 for no 1 for yes: ");
+         System.out.println("Budget Setup");
+         System.out.println("1) Setup new budget \n2) Restore saved budget from file \n");
          int input = userInput.nextInt();
+         userInput.nextLine();
 
          switch(input){
-            case 0:
-                break;
             case 1:
                 Budget budget = new Budget();
                 budget.budgetSetup();
+                System.out.println("Budget setup complete. returning to main menu...");
+                break;
+            case 2:
+                System.out.println("Feature not implemented yet......");
                 break;
         }
         return;
      }
 
+     public static void saveArrayListToFile(ArrayList<Expense> arrayList) {
+         // Generate a unique filename based on the current timestamp
+         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+         String fileName = "ExpenseList_" + dateFormat.format(new Date()) + ".txt";
+
+         try {
+             // Create a BufferedWriter to write to the file
+             BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+
+             // Loop through the ArrayList and write each element to the file
+             for (Expense element : arrayList) {
+                 writer.write(String.valueOf(element));
+                 writer.newLine(); // Add a newline character to separate elements
+             }
+
+             // Close the writer to release system resources
+             writer.close();
+
+             System.out.println("ArrayList has been successfully saved to " + fileName);
+         } catch (IOException e) {
+             System.err.println("Error saving ArrayList to file: " + e.getMessage());
+         }
+     }
     public static void clearTotal() {
         ExpenseTracker.total = 0;
     }

@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -7,29 +8,37 @@ import java.util.Scanner;
 // setup percent values for each category
 public class Budget {
 
+    private static int numCategories;
+
+    public static ArrayList<String> categories = new ArrayList<>();
+
     public static void budgetSetup() {
-        Scanner userInput = new Scanner(System.in);
 
-        System.out.print("Enter the number of categories: ");
-        int numCategories = userInput.nextInt();
-        userInput.nextLine(); // Consume the newline character
+        Scanner scanner = new Scanner(System.in);
+        String userInput;
 
-        String[] stringArray = new String[numCategories];
+        System.out.print("First enter each category for the budget followed by enter key. ");
 
-        for (int i = 0; i < numCategories; i++) {
-            System.out.print("Enter string " + (i + 1) + ": ");
-            stringArray[i] = userInput.nextLine();
+        while (true) {
+            // Prompt the user for input
+            System.out.print("Enter a new category ('q' when done): ");
+            userInput = scanner.nextLine();
+
+            if (userInput.equalsIgnoreCase("q")) {
+                break; // Exit the loop if the user enters 'q'
+            }
+
+            // Add the user's input to the ArrayList
+            categories.add(userInput);
+        }
+        // Display the contents of the ArrayList
+        System.out.println("Budget Categories: ");
+        for (String item : categories) {
+            System.out.println(item);
         }
 
-        // Now, you have an array of strings in stringArray.
-
-        // Print the entered strings
-        System.out.println("You entered the following categories:");
-        for (String str : stringArray) {
-            System.out.println(str);
-        }
-
-        //userInput.close(); // Close the scanner when done.
+        return;
     }
+
 }
 
