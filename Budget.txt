@@ -1,0 +1,7 @@
+housing,1200.0
+phone,120.0
+gas,200.0
+clothing,600.0
+utilities,400.0
+groceries,800.0
+internet,100.0

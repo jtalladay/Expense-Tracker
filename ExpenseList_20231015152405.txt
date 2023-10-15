@@ -1,0 +1,8 @@
+ID: 1 Date: 2023-10-15 Category: gas Amount: $50.00
+
+ID: 2 Date: 2023-10-15 Category: groceries Amount: $180.00
+
+ID: 3 Date: 2023-10-15 Category: internet Amount: $100.00
+
+ID: 4 Date: 2023-10-15 Category: housing Amount: $1,150.00
+

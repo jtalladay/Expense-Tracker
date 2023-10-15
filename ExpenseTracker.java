@@ -18,8 +18,7 @@ import java.io.IOException;
  Grocery: (user enters) 0.35 (user presses enter)
 
  Back to main menu
- 1) Setup New Budget
- 2) Restore Budget
+ 1) Budget
  3) Expense Adding Mode
  4) Restore previous expense tracker
  "3" enter
@@ -61,17 +60,16 @@ public class ExpenseTracker {
 
      /*
     main menu:
-            1) Setup New Budget
-            2) Restore Budget
+            1) Budget
             3) Expense Adding Mode
             4) Restore previous expense tracker
     */
      public static void mainMenu(){
-         int selection = 0;
-         while(selection != 6) {
-             System.out.println("Main Menu: \n 1) Setup New Budget \n 2) Restore Budget \n " +
-                     "3) Expense Adding Mode \n 4) Restore previous expense tracker \n " +
-                      "5) Save Expenses to text file \n 6) QUIT");
+         int selection = 1;
+         while(selection < 5 && selection > 0) {
+             System.out.println("Main Menu: \n 1) Budget \n " +
+                     "2) Expense Adding Mode \n 3) Restore previous expense tracker \n " +
+                      "4) Save Expenses to text file \n 5) QUIT");
              selection = userInput.nextInt();
              userInput.nextLine();
 
@@ -80,22 +78,20 @@ public class ExpenseTracker {
                      budgetSetup();
                      break;
                  case 2:
-                     System.out.println("Restoring previously used budget... ");
-                     break;
-                 case 3:
                      System.out.println("Entering expense mode... ");
                      expenseAdder();
                      break;
-                 case 4:
+                 case 3:
                      System.out.println("Restoring previously used expense tracker...");
                      break;
-                 case 5:
+                 case 4:
                      System.out.println("Name of file to save: ");
                      String fileName = userInput.nextLine();
                      userInput.nextLine();
                      System.out.println("Saving current expense list to file...");
                      saveArrayListToFile(expenses);
-                 case 6:
+                 default:
+                     System.out.println("Quitting the application...");
                      break;
              }
              //in the while loop still
@@ -163,20 +159,30 @@ public class ExpenseTracker {
 
      public static void budgetSetup(){
          System.out.println("Budget Setup");
-         System.out.println("1) Setup new budget \n2) Restore saved budget from file \n");
+         Budget budget = new Budget();
+
+         System.out.println("1) Setup new budget \n2) Restore saved budget from file \n" +
+                  "3) Save budget to file for reuse");
          int input = userInput.nextInt();
          userInput.nextLine();
 
          switch(input){
             case 1:
-                Budget budget = new Budget();
                 budget.budgetSetup();
                 System.out.println("Budget setup complete. returning to main menu...");
                 break;
             case 2:
-                System.out.println("Feature not implemented yet......");
+                System.out.println("You selected to load budget from file.");
+                System.out.println("Enter the filename of the budget to load: ");
+                String filename = userInput.nextLine();
+                userInput.nextLine();
+                budget.loadBudgetFromFile(filename);
                 break;
-        }
+             case 3:
+                 System.out.println("You selected to save budget to file.");
+                 budget.saveBudgetToFile();
+
+         }
         return;
      }
 
