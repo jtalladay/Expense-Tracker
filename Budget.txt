@@ -1,7 +1,8 @@
-housing,1200.0
-phone,120.0
-gas,200.0
-clothing,600.0
-utilities,400.0
-groceries,800.0
-internet,100.0
+Monthly Income: 4400.0
+Category   Amount    
+car,400.000000
+housing,1320.000000
+gas,500.000000
+utilities,200.000000
+food,1000.000000
+clothes,300.000000

@@ -1,5 +1,8 @@
-car,0.2
-gas,0.2
-house,0.2
-food,0.2
-clothes,0.2
+Monthly Income: 4400.0
+Category   Amount    
+car,400.000000
+housing,1320.000000
+gas,500.000000
+utilities,200.000000
+food,1000.000000
+clothes,300.000000

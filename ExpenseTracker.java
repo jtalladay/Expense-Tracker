@@ -1,31 +1,32 @@
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.*;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
-// Major issue, how can i save a list of categories in the budget object that
-// can be used in the expensetracker object
+/* STILL TO DO
+Setup New Budget
+Name new budget: "Home Budget"
+print totals for each category independantly
+have checks for when the expenses added are reaching the budgeted limit
+need to print out negative if value has gone past limit
+need to have a way to keep track of the month
 
- /* STILL TO DO
- Setup New Budget
- Name new budget: "Home Budget"
- Enter what categories you want "Car, Grocery"
- Enter decimal value for percentages for each category
- exmaple:
- Car: (user enters) 0.25 (user presses enter)
- Grocery: (user enters) 0.35 (user presses enter)
+Back to main menu
+1) Budget
+3) Expense Adding Mode
+4) Restore previous expense tracker
+"3" enter
 
- Back to main menu
- 1) Budget
- 3) Expense Adding Mode
- 4) Restore previous expense tracker
- "3" enter
-
- Select what budget to use
- 1) "Home Budget"
- "1" enter
+Select what budget to use
+1) "Home Budget"
+"1" enter
 
 
 methods
@@ -40,7 +41,7 @@ categoryTotal()
 
 
 
-  */
+ */
 public class ExpenseTracker {
     public static double total;
     public static int id = 1;
@@ -65,33 +66,45 @@ public class ExpenseTracker {
             4) Restore previous expense tracker
     */
      public static void mainMenu(){
-         int selection = 1;
-         while(selection < 5 && selection > 0) {
+         int selection = 0;
+         while(selection != 5) {
              System.out.println("Main Menu: \n 1) Budget \n " +
-                     "2) Expense Adding Mode \n 3) Restore previous expense tracker \n " +
-                      "4) Save Expenses to text file \n 5) QUIT");
+                     "2) Expense Adding Mode \n 3) Save Expenses to text file \n " +
+                      "4) Restore previous expense tracker  \n 5) QUIT");
              selection = userInput.nextInt();
              userInput.nextLine();
 
              switch (selection) {
-                 case 1:
+                 case 1: // Set up budget
                      budgetSetup();
                      break;
-                 case 2:
+                 case 2: // Enter expense adding mode
                      System.out.println("Entering expense mode... ");
                      expenseAdder();
                      break;
-                 case 3:
-                     System.out.println("Restoring previously used expense tracker...");
-                     break;
-                 case 4:
+                 case 3: // Save expense list
                      System.out.println("Name of file to save: ");
                      String fileName = userInput.nextLine();
                      userInput.nextLine();
                      System.out.println("Saving current expense list to file...");
-                     saveArrayListToFile(expenses);
-                 default:
+                     saveExpenseListToFile(expenses);
+                 case 4: // Load expense list
+                     System.out.println("Restoring previously used expense tracker...");
+                     System.out.println("You selected to load Expense list from file.");
+                     System.out.println("Enter the filename of the expense list to load: ");
+                     String filename = userInput.nextLine();
+                     userInput.nextLine();
+                     if(loadExpenseListFromFile(filename)){
+                         System.out.println("Expense list successfully loaded...");
+                     }else{
+                         System.out.println("File not loaded, try again...");
+                     }
+                     break;
+                 case 5:
                      System.out.println("Quitting the application...");
+                     break;
+                 default:
+                     System.out.println("Invalid input, please try again... ");
                      break;
              }
              //in the while loop still
@@ -141,7 +154,8 @@ public class ExpenseTracker {
                      id++;
                      break;
 
-                 case 2:
+                 case 2: // need to work on this need to add totals per category
+
                      System.out.println(expenses);
                      System.out.println("Total = " + numberFormatter.format(total));
                      break;
@@ -176,7 +190,12 @@ public class ExpenseTracker {
                 System.out.println("Enter the filename of the budget to load: ");
                 String filename = userInput.nextLine();
                 userInput.nextLine();
-                budget.loadBudgetFromFile(filename);
+                boolean loadedSuccessfully = budget.loadBudgetFromFile(filename);
+                if (loadedSuccessfully) {
+                    System.out.println("Budget has been loaded successfully:");
+                } else {
+                    System.out.println("Failed to load the budget from the file.");
+                }
                 break;
              case 3:
                  System.out.println("You selected to save budget to file.");
@@ -186,7 +205,7 @@ public class ExpenseTracker {
         return;
      }
 
-     public static void saveArrayListToFile(ArrayList<Expense> arrayList) {
+     public static void saveExpenseListToFile(ArrayList<Expense> arrayList) {
          // Generate a unique filename based on the current timestamp
          SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
          String fileName = "ExpenseList_" + dateFormat.format(new Date()) + ".txt";
@@ -198,7 +217,7 @@ public class ExpenseTracker {
              // Loop through the ArrayList and write each element to the file
              for (Expense element : arrayList) {
                  writer.write(String.valueOf(element));
-                 writer.newLine(); // Add a newline character to separate elements
+                 //writer.newLine(); // Add a newline character to separate elements
              }
 
              // Close the writer to release system resources
@@ -209,6 +228,40 @@ public class ExpenseTracker {
              System.err.println("Error saving ArrayList to file: " + e.getMessage());
          }
      }
+     public static boolean loadExpenseListFromFile(String filename) {
+         try {
+
+             BufferedReader reader = new BufferedReader(new FileReader(filename));
+             String line;
+             String pattern = "ID: (\\d+) Date: (\\d{4}-\\d{2}-\\d{2}) Category: (\\w+) Amount: \\$([\\d,.]+)";
+
+             Pattern expensePattern = Pattern.compile(pattern);
+
+             while ((line = reader.readLine()) != null) {
+                 Matcher matcher = expensePattern.matcher(line);
+                 if (matcher.find()) {
+                     int id = Integer.parseInt(matcher.group(1));
+                     String date = matcher.group(2);
+                     String category = matcher.group(3);
+                     double amount = Double.parseDouble(matcher.group(4).replaceAll(",", "")); // Remove commas and convert to double
+
+                     expenses.add(new Expense(id, date, category, amount));
+                 }
+             }
+
+             reader.close();
+
+             // Now, you have a list of Expense objects with the data from the file.
+             for (Expense expense : expenses) {
+                 System.out.println(expense);
+             }
+             return true;
+         } catch (IOException e) {
+             e.printStackTrace();
+             return false;
+         }
+
+     } // end of load method
     public static void clearTotal() {
         ExpenseTracker.total = 0;
     }

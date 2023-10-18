@@ -1,5 +1,0 @@
-Utilities,0.3
-Groceries,0.1
-Car,0.2
-Gas,0.1
-Rent,0.3

@@ -77,51 +77,59 @@ public class Budget {
             }
         }
         for (String key : budget.keySet()) {
-            System.out.println(key + " -> " + numberFormatter.format(budget.get(key)));
+            System.out.printf("%-10s $%.2f%n", key, budget.get(key));
         }
 
 
         return;
     }// end of budget setup method
 
-
-
-
-
     public static void saveBudgetToFile(){
         try (PrintWriter writer = new PrintWriter(new FileWriter("Budget.txt"))) {
+            writer.println("Monthly Income: " + monthlyIncome);
+            writer.printf("%-10s %-10s%n", "Category", "Amount");
+            //writer.println("Category    Amount");
             for (String key : budget.keySet()) {
                 double value = budget.get(key);
-                writer.println(key + "," + value);
+                writer.printf("%s,%f%n", key, value);
             }
-            System.out.println("HashMap has been saved to Budget.txt");
+            System.out.println("Budget has been saved to Budget.txt");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }// end of save budget method
 
-    public static void loadBudgetFromFile(String filename){
-
+    public static boolean loadBudgetFromFile(String filename) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
+            boolean isHeader = true; // To skip the header lines
             while ((line = reader.readLine()) != null) {
+                if (isHeader) {
+                    if (line.trim().isEmpty()) {
+                        continue; // Skip empty header lines
+                    }
+                    isHeader = false; // Skip the first non-empty line
+                    monthlyIncome = Double.parseDouble(line.replaceAll("[^\\d.]", "")); // Update monthlyIncome
+                    continue;
+                }
+
                 String[] parts = line.split(",");
                 if (parts.length == 2) {
-                    String key = parts[0];
-                    double value = Double.parseDouble(parts[1]);
-                    budget.put(key, value);
+                    String category = parts[0].trim();
+                    double amount = Double.parseDouble(parts[1].trim());
+                    budget.put(category, amount);
                 }
             }
-            System.out.println("Budget has been loaded from " + filename);
+
+            for (String key : budget.keySet()) {
+                System.out.printf("%-10s $%.2f%n", key, budget.get(key));
+            }
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
-
-        // Display the loaded HashMap
-        for (String key : budget.keySet()) {
-            System.out.println(key + " -> " + budget.get(key));
-        }
-    }// end of load budget method
+    }
 
 }
 
